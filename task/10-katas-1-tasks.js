@@ -17,8 +17,13 @@
  *  ]
  */
 function createCompassPoints() {
-    throw new Error('Not implemented');
-    var sides = ['N','E','S','W'];  // use array of cardinal directions only!
+    var sides = ['N', 'E', 'S', 'W'];
+    sides.splice(sides.indexOf('N') + 1, 0, 'NbE', 'NNE', 'NEbN', 'NE', 'NEbE', 'ENE', 'EbN');
+    sides.splice(sides.indexOf('E') + 1, 0, 'EbS', 'ESE', 'SEbE', 'SE', 'SEbS', 'SSE', 'SbE');
+    sides.splice(sides.indexOf('S') + 1, 0, 'SbW', 'SSW', 'SWbS', 'SW', 'SWbW', 'WSW', 'WbS');
+    sides.splice(sides.indexOf('W') + 1, 0, 'WbN', 'WNW', 'NWbW', 'NW', 'NWbN', 'NNW', 'NbW');
+
+    return sides.map((side, i) => ({abbreviation: side, azimuth: (11.25 * i)}));
 }
 
 
@@ -56,7 +61,23 @@ function createCompassPoints() {
  *   'nothing to do' => 'nothing to do'
  */
 function* expandBraces(str) {
-    throw new Error('Not implemented');
+    const regex = new RegExp(/{[^{}]+}/g);
+    const processed = [str];
+    while (processed.length > 0) {
+        let str = processed.shift();
+        let match = str.match(regex);
+        if (match) {
+            let alternations = match[0].slice(1, -1).split(',');
+            for (const alternation of alternations) {
+                let replaced = str.replace(match[0], alternation);
+                if (!processed.includes(replaced)) {
+                    processed.push(replaced)
+                }
+            }
+        } else {
+            yield str;
+        }
+    }
 }
 
 
